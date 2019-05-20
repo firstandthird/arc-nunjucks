@@ -1,0 +1,18 @@
+{
+  "name": "@firstandthird/arc-nunjucks",
+  "version": "1.0.0",
+  "description": "Nunjucks and pagedata support",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "First+Third",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@architect/functions": "^3.0.5",
+    "pagedata": "5.0.1",
+    "nunjucks": "3.2.0"
+  },
+  "devDependencies": {}
+}
