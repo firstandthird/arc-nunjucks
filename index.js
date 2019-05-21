@@ -4,6 +4,7 @@ const getContent = require('./getContent');
 const static = arc.http.helpers.static;
 const mapping = require('@architect/shared/assets.json');
 const config = require('@architect/shared/config.json');
+const path = require('path');
 
 const asset = function (file) {
   if (mapping && mapping[file]) {
@@ -32,7 +33,9 @@ module.exports = async function layout(page, pagedata = false, request = {}) {
 
   console.log(`Rendering ${page}`);
 
-  nunjucks.configure(`${__dirname}/views`, { autoescape: true });
+  const sharedPath = path.dirname(require.resolve('@architect/shared/config.json'));
+
+  nunjucks.configure(`${sharedPath}/views`, { autoescape: true });
 
   const common = Object.assign({
     static,
