@@ -1,6 +1,6 @@
 {
   "name": "@firstandthird/arc-nunjucks",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Nunjucks and pagedata support",
   "main": "index.js",
   "scripts": {
