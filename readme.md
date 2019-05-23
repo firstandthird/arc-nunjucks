@@ -27,13 +27,13 @@ exports.handler = async function http(req) {
     return {
       statusCode: '404',
       headers: { 'content-type': 'text/html; charset=utf8' },
-      body: await render('not-found/view', 'not-found', req)
+      body: await render('not-found/view', 'not-found', {}, req)
     }
   }
 
   return {
     headers: { 'content-type': 'text/html; charset=utf8' },
-    body: await render('home/view', 'homepage', req)
+    body: await render('home/view', 'homepage', { userName: 'karen' } req)
   };
 }
 ```
@@ -44,6 +44,7 @@ exports.handler = async function http(req) {
 
 - `view`     - A of the template that is to be required. Do not add an extention. `.njk` will be automatically added.
 - `pagedata` - The name of the pagedata slug the page will use. Optionally set to false to not load data for this view. (Common will still be loaded if configured)
+- 'viewContext' - An object containing any context you need to pass to the view.
 - `request`  - Pass the request object to enable cache clearing and access to the request variables in the template.
 
 ### Configuration

@@ -16,7 +16,7 @@ const asset = function (file) {
 
 let renderCache = {};
 
-module.exports = async function layout(page, pagedata = false, request = {}) {
+module.exports = async function layout(page, pagedata = false, viewContext = {}, request = {}) {
   if (!request.query) {
     request.query = {};
   }
@@ -55,7 +55,7 @@ module.exports = async function layout(page, pagedata = false, request = {}) {
     common.common = commonContent.content;
   }
 
-  const context = Object.assign({}, common, data);
+  const context = Object.assign(viewContext, common, data);
 
   try {
     const renderedPage = await nunjucks.render(`pages/${page}.njk`, context);
