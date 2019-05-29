@@ -1,6 +1,5 @@
 const nunjucks = require('nunjucks');
 const arc = require('@architect/functions');
-const getContent = require('./getContent');
 const static = arc.http.helpers.static;
 const mapping = require('@architect/shared/assets.json');
 const config = require('@architect/shared/config.json');
@@ -16,7 +15,7 @@ const asset = function (file) {
 
 let renderCache = {};
 
-module.exports = async function layout(page, pagedata = false, viewContext = {}, request = {}) {
+module.exports = async function layout(page, additionalContent = {}, viewContext = {}, request = {}) {
   if (!request.query) {
     request.query = {};
   }
@@ -43,17 +42,7 @@ module.exports = async function layout(page, pagedata = false, viewContext = {},
     request
   }, config.context || {});
 
-  const data = {};
-
-  if (pagedata) {
-    const pg = await getContent(pagedata);
-    data.content = pg.content;
-  }
-
-  if (config.commonSlug) {
-    const commonContent = await getContent(config.commonSlug);
-    common.common = commonContent.content;
-  }
+  const data = typeof additionalContent === 'function'? await additionalContent(config) : additionalContent;
 
   const context = Object.assign(viewContext, common, data);
 
