@@ -1,6 +1,6 @@
 {
   "name": "@firstandthird/arc-nunjucks",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "arc nunjucks",
   "main": "index.js",
   "scripts": {
