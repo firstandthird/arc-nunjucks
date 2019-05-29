@@ -10,7 +10,6 @@
   "license": "MIT",
   "dependencies": {
     "@architect/functions": "^3.0.5",
-    "pagedata": "5.0.1",
     "nunjucks": "3.2.0"
   },
   "devDependencies": {}

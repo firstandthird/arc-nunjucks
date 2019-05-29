@@ -1,9 +1,7 @@
 const nunjucks = require('nunjucks');
 const arc = require('@architect/functions');
-const getContent = require('./getContent');
 const static = arc.http.helpers.static;
 const mapping = require('@architect/shared/assets.json');
-const config = require('@architect/shared/config.json');
 const path = require('path');
 
 const asset = function (file) {
@@ -16,12 +14,11 @@ const asset = function (file) {
 
 let renderCache = {};
 
-module.exports = async function layout(page, pagedata = false, viewContext = {}, request = {}) {
-  if (!request.query) {
-    request.query = {};
-  }
-
-  if (request.query.update) {
+// page is name of page to render
+// context can be an object or function
+// forceUpdate refreshes the cache
+module.exports = async function layout(page, context = {}, forceUpdate = false) {
+  if (forceUpdate) {
     console.log('Clearing cache');
     renderCache = {};
   }
@@ -33,32 +30,19 @@ module.exports = async function layout(page, pagedata = false, viewContext = {},
 
   console.log(`Rendering ${page}`);
 
-  const sharedPath = path.dirname(require.resolve('@architect/shared/config.json'));
+  const sharedPath = path.dirname(require.resolve('@architect/shared'));
 
   nunjucks.configure(`${sharedPath}/views`, { autoescape: true });
 
-  const common = Object.assign({
-    static,
-    asset,
-    request
-  }, config.context || {});
-
-  const data = {};
-
-  if (pagedata) {
-    const pg = await getContent(pagedata);
-    data.content = pg.content;
+  // if a method was passed, call it and use the result as the context:
+  if (typeof context === 'function') {
+    context = await context();
   }
 
-  if (config.commonSlug) {
-    const commonContent = await getContent(config.commonSlug);
-    common.common = commonContent.content;
-  }
-
-  const context = Object.assign(viewContext, common, data);
+  const fullContext = Object.assign(static, asset, context);
 
   try {
-    const renderedPage = await nunjucks.render(`pages/${page}.njk`, context);
+    const renderedPage = await nunjucks.render(`pages/${page}.njk`, fullContext);
     renderCache[page] = renderedPage;
   } catch (e) {
     console.log(e);
