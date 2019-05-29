@@ -34,16 +34,12 @@ module.exports = async function layout(page, context = {}, forceUpdate = false) 
 
   nunjucks.configure(`${sharedPath}/views`, { autoescape: true });
 
-  const common = Object.assign({
-    static,
-    asset,
-  });
   // if a method was passed, call it and use the result as the context:
   if (typeof context === 'function') {
     context = await context();
   }
 
-  const fullContext = Object.assign(common, context);
+  const fullContext = Object.assign(static, asset, context);
 
   try {
     const renderedPage = await nunjucks.render(`pages/${page}.njk`, fullContext);
