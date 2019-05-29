@@ -30,7 +30,7 @@ module.exports = async function layout(page, context = {}, forceUpdate = false) 
 
   console.log(`Rendering ${page}`);
 
-  const sharedPath = path.dirname(require.resolve('@architect/shared/config.json'));
+  const sharedPath = path.dirname(require.resolve('@architect/shared'));
 
   nunjucks.configure(`${sharedPath}/views`, { autoescape: true });
 
