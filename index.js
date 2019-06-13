@@ -5,7 +5,7 @@ const arc = require('@architect/functions');
 const static = arc.http.helpers.static;
 
 // arc-rapptor also uses the SHARED_PATH env variable:
-const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/default.json` : '@architect/shared/default.json';
+const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.json` : '@architect/shared/assets.json';
 let mapping = false;
 if (fs.existsSync(assetPath)) {
   mapping = require(assetPath);
