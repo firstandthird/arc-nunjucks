@@ -21,6 +21,6 @@ tap.test('registers and uses helpers', async t => {
 
 tap.test('provides static assets', async t => {
   const r = await arcJucks.render('assets.njk', { });
-  t.match(r, 'hi there /_dist/mappedAsset.jpeg');
+  t.match(r, 'load this css: /_dist/somewhere/on/s3/main.css');
   t.end();
 });
