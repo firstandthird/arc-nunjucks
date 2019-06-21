@@ -1,72 +1,90 @@
-## Nunjucks + Pagedata for Arcitect
+# Nunjucks + Pagedata for Arcitect
 
-This library assists in loading nunjucks views, pagedata, and config data.
+This library assists in loading nunjucks views, helpers and static assets.
 
-### Requirements
-
-- A `config.json` in the root of the `shared` folder.
-- A `views` directory which contain the nunjuck files that will be loaded.
-- A `pages` directory inside of the `views` directory. This is where page templates exist.
-- Optionally place base templates in the `views` directory root that you will `{% extends "base.njk" %}`
-- A clientkit generated `assets.json` from which urls for css/js will be generated.
-- A pagedata configuration section in your `config.json`
-
-### Installation
+## Installation
 
 Run `npm install @firstandthird/arc-nunjucks` in your http route directory.
 
-### Usage
+### Render
 
 Example http route:
 
 ```javascript
-const render = require('@firstandthird/arc-nunjucks');
+process.env.VIEWS_PATH = '/main/views';
+process.env.SHARED_PATH = '/main/shared';
+
+const arcJucks = require('@firstandthird/arc-nunjucks');
 
 exports.handler = async function http(req) {
   if (req.path !== '/') {
     return {
       statusCode: '404',
       headers: { 'content-type': 'text/html; charset=utf8' },
-      body: await render('not-found/view', 'not-found', {}, req)
+      // will try to render /main/views/not-found.njk with the indicated context:
+      body: await arcJucks.render('not-found', { attemptedPath: req.path })
     }
   }
 
   return {
     headers: { 'content-type': 'text/html; charset=utf8' },
-    body: await render('home/view', 'homepage', { userName: 'karen' } req)
+    // will try to render /main/views/homepage.njk with the indicated context:
+    body: await arcJucks.render('homepage', { userName: 'karen' })
   };
 }
 ```
 
-#### Hash
+### Helpers
 
-`render(<view>, <pagedata>, request)`
+Example use of custom filters:
 
-- `view`     - A of the template that is to be required. Do not add an extention. `.njk` will be automatically added.
-- `pagedata` - The name of the pagedata slug the page will use. Optionally set to false to not load data for this view. (Common will still be loaded if configured)
-- 'viewContext' - An object containing any context you need to pass to the view.
-- `request`  - Pass the request object to enable cache clearing and access to the request variables in the template.
+#### /main/views/helpers/shorten.js:
 
-### Configuration
+```javascript
+// a standard nunjucks filter:
+module.exports = function(str, count) {
+  return str.slice(0, count || 5);
+};```
 
-- `pagedata`    - `<Object>` Required
-  - `userAgent` - User agent to use in pagedata requests
-  - `host`      - Pagedata host
-  - `key`       - Pagedata key
-  - `status`    - Status to use, `draft` or `published`
-- `context`     - `<Object>` Additional data to be added to the view
-- `commonSlug`  - Pagedata slug for common content. Set to `false` to disable. Will available in the template as `{{common}}`
+#### /main/views/shorten.njk:
+```nunjucks
+hi there <b> {{name|shorten}} </b>
+```
+#### /src/shared/route.js
+```javascript
+process.env.VIEWS_PATH = '/main/views';
+process.env.SHARED_PATH = '/main/shared';
 
-### Variables available in views
+const arcJucks = require('@firstandthird/arc-nunjucks');
 
-- `static`   - `<Function>` Arc's static file helper function. Use when referencing non-clientkit generated files located in `public`. Example: `{{ static('pdf/example.pdf') }}`
-- `asset`    - `<Function>` Loads a clientkit asset by name. Example: `{{ asset('common.css') }}`
-- `request`  - `<Object>` Original request object from Arc. Use `request.query` to access query params. Note: These are not passed on 404 routes - bug with arc.
+exports.handler = async function http(req) {
+  return {
+    headers: { 'content-type': 'text/html; charset=utf8' },
+    // will try to render /main/views/homepage.njk with the indicated context:
+    body: await arcJucks.render('shorten', { userName: 'karenwestington' })
+  };
+}
+```
 
-Any other items set in the `context` configuration key will be merged into the view object.
+will render as:
+```
+  hi there <b> karen </b>
+```
 
-### Clearing cache
+## Static Assets:
 
-Pages are cached the first time rendered and pulled from memory from there. To rebuild cache for a route, visit the url and append `?update=1`
+arc.codes will upload static assets (listed in the ```public/``` directory) and host them on s3 in the respective production/staging server. arc-nunjucks provides a ```static``` filter that will handle mapping the asset name to either the file location (in local mode) or to the appropriate URL on s3 (when in staging or production mode):
 
-Note: Cache may also be cleared if the function is unloaded from lambda.
+```json
+{
+  "/homepageStyle": "/s3/bucket1/folder1/style.css"
+}
+```
+
+The asset can now be referred to from within your nunjucks views:
+
+```njk
+load this css: {{ asset("/homepageStyle")}}
+```
+
+This will always load the correct location for the CSS whether in local, staging or production mode.
