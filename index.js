@@ -30,11 +30,11 @@ const asset = function (file) {
   return staticAsset(file);
 };
 nEnv.addGlobal('asset', asset);
-nEnv.addGlobal('static', static);
+nEnv.addGlobal('staticAsset', staticAsset);
 
 module.exports = {
   env: nEnv,
   nunjucks,
   render: nunjucks.render,
-  static
+  staticAsset
 };
