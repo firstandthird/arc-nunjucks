@@ -1,7 +1,4 @@
 const tap = require('tap');
-const arc = require('@architect/functions');
-// stub static function:
-arc.http.helpers.static = (myAsset) => myAsset;
 
 process.env.VIEWS_PATH = `${__dirname}/views`;
 process.env.SHARED_PATH = __dirname;
@@ -21,6 +18,6 @@ tap.test('registers and uses helpers', async t => {
 
 tap.test('provides static assets', async t => {
   const r = await arcJucks.render('assets.njk', { });
-  t.match(r, 'load this css: /_dist/somewhere/on/s3/main.css');
+  t.match(r, 'load this css: /_static/_dist/somewhere/on/s3/main.css');
   t.end();
 });

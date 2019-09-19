@@ -2,7 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const nunjucks = require('nunjucks');
 const arc = require('@architect/functions');
-const staticAsset = arc.http.helpers.static;
+const staticAsset = arc.static;
 
 // arc-rapptor also uses the SHARED_PATH env variable:
 const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.json` : '@architect/shared/assets.json';
