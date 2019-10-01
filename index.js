@@ -9,8 +9,13 @@ const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.j
 let mapping = false;
 
 if (assetPath.startsWith('@architect') || fs.existsSync(assetPath)) {
-  mapping = require(assetPath);
+  try {
+    mapping = require(assetPath);
+  } catch (e) {
+    // do nothing
+  }
 }
+
 const routeDir = path.resolve(__dirname, '../../../');
 const viewDir = process.env.VIEWS_PATH || path.resolve(routeDir, 'node_modules/@architect/views');
 const nEnv = nunjucks.configure([routeDir, viewDir], { autoescape: true });
