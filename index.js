@@ -8,10 +8,12 @@ const staticAsset = arc.static;
 const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.json` : '@architect/shared/assets.json';
 let mapping = false;
 
-if (assetPath.startsWith('@architect')) {
-  mapping = require(assetPath);
-} else if (fs.existsSync(assetPath)) {
-  mapping = require(assetPath);
+if (assetPath.startsWith('@architect') || fs.existsSync(assetPath)) {
+  try {
+    mapping = require(assetPath);
+  } catch (e) {
+    // do nothing
+  }
 }
 
 const routeDir = path.resolve(__dirname, '../../../');
