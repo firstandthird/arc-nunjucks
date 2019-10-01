@@ -8,9 +8,12 @@ const staticAsset = arc.static;
 const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.json` : '@architect/shared/assets.json';
 let mapping = false;
 
-if (assetPath.startsWith('@architect') || fs.existsSync(assetPath)) {
+if (assetPath.startsWith('@architect')) {
+  mapping = require(assetPath);
+} else if (fs.existsSync(assetPath)) {
   mapping = require(assetPath);
 }
+
 const routeDir = path.resolve(__dirname, '../../../');
 const viewDir = process.env.VIEWS_PATH || path.resolve(routeDir, 'node_modules/@architect/views');
 const nEnv = nunjucks.configure([routeDir, viewDir], { autoescape: true });
