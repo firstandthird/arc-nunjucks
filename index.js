@@ -42,12 +42,24 @@ const staticAsset = function(file) {
   return p;
 };
 
-const asset = function (file) {
+const asset = function (file, config) {
+  let url = '';
+
   if (mapping && mapping[file]) {
     return staticAsset(`_dist/${mapping[file]}`);
   }
 
-  return staticAsset(file);
+  url = staticAsset(file);
+
+  if (!config || !config.cdn) {
+    return url;
+  }
+
+  // resets just the domain
+  url = new URL(url);
+  url.host = config.cdn;
+
+  return url.href;
 };
 nEnv.addGlobal('asset', asset);
 nEnv.addGlobal('staticAsset', staticAsset);
