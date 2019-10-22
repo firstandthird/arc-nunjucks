@@ -42,14 +42,22 @@ const staticAsset = function(file) {
   return p;
 };
 
-const asset = function (file, config) {
+const asset = function (file) {
   let url = '';
+  let config;
 
   if (mapping && mapping[file]) {
     return staticAsset(`_dist/${mapping[file]}`);
   }
 
   url = staticAsset(file);
+
+  try {
+    config = nEnv.getGlobal('config');
+  } catch (e) {
+    // silently fail
+    // nunjucks errors if global not found
+  }
 
   if (!config || !config.cdn) {
     return url;
