@@ -47,10 +47,10 @@ const asset = function (file) {
   let config;
 
   if (mapping && mapping[file]) {
-    return staticAsset(`_dist/${mapping[file]}`);
+    url = staticAsset(`_dist/${mapping[file]}`);
+  } else {
+    url = staticAsset(file);
   }
-
-  url = staticAsset(file);
 
   try {
     config = nEnv.getGlobal('config');
@@ -59,7 +59,8 @@ const asset = function (file) {
     // nunjucks errors if global not found
   }
 
-  if (!config || !config.cdn) {
+  // Handles cdn being disabled and local relative paths
+  if (!config || !config.cdn || !url.startsWith('http')) {
     return url;
   }
 
