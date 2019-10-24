@@ -29,27 +29,16 @@ if (fs.existsSync(`${viewDir}/helpers`)) {
 }
 
 const staticAsset = function(file) {
+  let config;
+
   // Arc's static helper can throw errors if file not found
-  let p = `/_static/${file}`;
+  let url = `/_static/${file}`;
 
   try {
-    p = arcStaticAsset(file);
+    url = arcStaticAsset(file);
   } catch (e) {
     console.log(`Error loading static asset: ${file}`);
     console.log(e);
-  }
-
-  return p;
-};
-
-const asset = function (file) {
-  let url = '';
-  let config;
-
-  if (mapping && mapping[file]) {
-    url = staticAsset(`_dist/${mapping[file]}`);
-  } else {
-    url = staticAsset(file);
   }
 
   try {
@@ -69,6 +58,18 @@ const asset = function (file) {
   url.host = config.cdn;
 
   return url.href;
+};
+
+const asset = function (file) {
+  let url = '';
+
+  if (mapping && mapping[file]) {
+    url = staticAsset(`_dist/${mapping[file]}`);
+  } else {
+    url = staticAsset(file);
+  }
+
+  return url;
 };
 nEnv.addGlobal('asset', asset);
 nEnv.addGlobal('staticAsset', staticAsset);
