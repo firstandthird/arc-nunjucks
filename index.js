@@ -1,11 +1,9 @@
 const path = require('path');
 const fs = require('fs');
 const nunjucks = require('nunjucks');
-const arc = require('@architect/functions');
-const arcStaticAsset = arc.static;
 
 // arc-rapptor also uses the SHARED_PATH env variable:
-const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/assets.json` : '@architect/shared/assets.json';
+const assetPath = process.env.SHARED_PATH ? `${process.env.SHARED_PATH}/static.json` : '@architect/shared/static.json';
 let mapping = false;
 
 if (assetPath.startsWith('@architect') || fs.existsSync(assetPath)) {
@@ -32,14 +30,7 @@ const staticAsset = function(file) {
   let config;
 
   // Arc's static helper can throw errors if file not found
-  let url = `/_static/${file}`;
-
-  try {
-    url = arcStaticAsset(file);
-  } catch (e) {
-    console.log(`Error loading static asset: ${file}`);
-    console.log(e);
-  }
+  let url = file;
 
   try {
     config = nEnv.getGlobal('config');
@@ -62,9 +53,10 @@ const staticAsset = function(file) {
 
 const asset = function (file) {
   let url = '';
+  file = `_static/${file}`;
 
   if (mapping && mapping[file]) {
-    url = staticAsset(`_dist/${mapping[file]}`);
+    url = staticAsset(mapping[file]);
   } else {
     url = staticAsset(file);
   }
